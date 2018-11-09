@@ -5,13 +5,13 @@ const chokidar = require("chokidar");
 
 const { isDirectory, findWhichSourceDir } = require("./helpers");
 
-function linkFile(filePath, srcDir, targetDir, ignored) {
+function linkFile(filePath, sourceDir, targetDir, ignored) {
 
 }
 
-function copyFile(filePath, srcDir, targetDir, ignored) {
-  const relativeFilePath = filePath.substring(srcDir.length);
-  const folderName = path.parse(srcDir).name;
+function copyFile(filePath, sourceDir, targetDir, ignored) {
+  const relativeFilePath = filePath.substring(sourceDir.length);
+  const folderName = path.parse(sourceDir).name;
   const targetPath = path.join(targetDir, folderName, relativeFilePath);
 
   // if (excludeUtil.test(`${relativeFilePath}${isDirectory ? '/' : ''}`, exclude)) {
@@ -21,10 +21,10 @@ function copyFile(filePath, srcDir, targetDir, ignored) {
   fse.copySync(filePath, targetPath);
 }
 
-function removeFile(filePath, srcDir, targetDir, ignored) {
+function removeFile(filePath, sourceDir, targetDir, ignored) {
 
-  const relativeFilePath = filePath.substring(srcDir.length);
-  const folderName = path.parse(srcDir).name;
+  const relativeFilePath = filePath.substring(sourceDir.length);
+  const folderName = path.parse(sourceDir).name;
   const targetFile = path.join(targetDir, folderName, relativeFilePath);
 
   // const isDirectory = isDirectoryUtil(filePath);
@@ -40,10 +40,10 @@ function removeFile(filePath, srcDir, targetDir, ignored) {
 }
 
 const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, ignored }) => (filePath) => {
-  const srcDir = findWhichSourceDir(sourceDirs, filePath);
-  console.log(srcDir);
+  const sourceDir = findWhichSourceDir(sourceDirs, filePath);
+  console.log(sourceDir);
 
-  copyFile(filePath, srcDir, targetDir, ignored);
+  copyFile(filePath, sourceDir, targetDir, ignored);
   onUpdate({
     type,
     path: filePath,
@@ -51,8 +51,8 @@ const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, ignored }) => (f
 };
 
 const onUnlink = ({ sourceDirs, targetDir, ignored, onUpdate, type }) => (filePath) => {
-  const srcDir = findWhichSourceDir(sourceDirs, filePath);
-  console.log(srcDir);
+  const sourceDir = findWhichSourceDir(sourceDirs, filePath);
+  console.log(sourceDir);
 
   removeFile(filePath, sourceDir, targetDir, ignored);
   onUpdate({
