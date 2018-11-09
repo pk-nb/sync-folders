@@ -33,6 +33,7 @@
   },
   "homepage": "https://github.com/pk-nb/sync-folders#readme",
   "dependencies": {
+    "anymatch": "^2.0.0",
     "chokidar": "^2.0.4",
     "fs-extra": "^7.0.1"
   }

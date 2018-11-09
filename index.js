@@ -1,13 +1,12 @@
 const sync = require('./source/sync');
 const watch = require('./source/watch');
 
-
 const defaultOptions = {
   type: "hardlink",
-  exclude: null,
+  ignored: undefined,
   watch: false,
   onSync: () => {},
-  onChange: () => {},
+  onUpdate: () => {},
 };
 
 module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
@@ -16,13 +15,13 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
     exclude,
     watch,
     onSync,
-    onChange,
+    onUpdate,
   } = Object.assign({}, defaultOptions, options);
 
-  sync(sourceDirs, targetDir, { type, exclude, onSync });
+  sync(sourceDirs, targetDir, { type, ignored, onSync });
 
   if (watch) {
-    const watcher = watchLocalFiles(sourceDirs, targetDir, { type, exclude, onSync, onChange});
+    const watcher = watchLocalFiles(sourceDirs, targetDir, { type, ignored, onSync, onUpdate});
     return watcher;
   }
 };
