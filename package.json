@@ -1,0 +1,39 @@
+{
+  "name": "sync-folders",
+  "version": "1.0.0",
+  "description": "A utility designed to copy local directories to a destination.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/pk-nb/sync-folders.git"
+  },
+  "bin": {
+    "sync-folders": "./bin/sync-folders.js"
+  },
+  "files": [
+    "bin",
+    "index.js",
+    "source"
+  ],
+  "keywords": [
+    "rsync",
+    "sync",
+    "copy",
+    "link",
+    "multiple",
+    "directory"
+  ],
+  "author": "Nathanael Beisiegel",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/pk-nb/sync-folders/issues"
+  },
+  "homepage": "https://github.com/pk-nb/sync-folders#readme",
+  "dependencies": {
+    "chokidar": "^2.0.4",
+    "fs-extra": "^7.0.1"
+  }
+}
