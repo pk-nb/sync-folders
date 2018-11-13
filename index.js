@@ -18,6 +18,8 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
     onUpdate,
   } = Object.assign({}, defaultOptions, options);
 
+  console.log(sourceDirs, targetDir);
+
   linkOrCopyFolders(sourceDirs, targetDir, { type, ignored, onSync });
 
   if (watch) {

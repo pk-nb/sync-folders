@@ -1,51 +1,23 @@
 const path = require("path");
-const fs = require("fs");
 const fse = require("fs-extra");
 const anymatch = require("anymatch");
 const readdirEnhanced = require("readdir-enhanced");
 
-const { isDirectory: isDirectoryUtil } = require("./helpers");
-const excludeUtil = require("./ignored");
+const { linkDirFiles, isDirectory: isDirectoryUtil } = require("./helpers");
+
+const ignore = (ignored) => (path) => {
+  return anymatch(ignored, path);
+}
 
 function readdirSync(dir, ignored) {
-  const ignoreFunc = (stats) => {
-    console.log(stats.path);
-    return !anymatch(ignored, stats.path);
-  }
-
   return readdirEnhanced.sync(dir, {
-    deep: ignored ? ignoreFunc : true,
+    deep: ignored ? (stats) => !ignore(ignored)(stats.path) : true,
     basePath: dir
   });
 }
 
-function utimeFile(filePath) {
-  const time = ((Date.now() - 10 * 1000)) / 1000;
-  fs.utimesSync(filePath, time, time);
-}
-
-function linkDirFiles(relativeFilePath, srcPath, targetPath) {
-  const stats = fs.statSync(srcPath);
-  if (stats.isFile()) {
-
-    if (fs.existsSync(targetPath)) {
-      if (stats.ino !== fs.statSync(targetPath).ino) {
-        fse.removeSync(targetPath);
-        fse.ensureLinkSync(srcPath, targetPath);
-        utimeFile(targetPath);
-      }
-    } else {
-      fse.ensureLinkSync(srcPath, targetPath);
-      utimeFile(targetPath);
-    }
-
-  } else if (stats.isDirectory()) {
-    fse.ensureDirSync(targetPath);
-  }
-}
-
 function copyDirFiles(srcPath, targetPath) {
-  if (fs.existsSync(srcPath) && !fs.existsSync(targetPath)) {
+  if (fse.existsSync(srcPath) && !fse.existsSync(targetPath)) {
     fse.copySync(srcPath, targetPath);
   }
 }
@@ -62,19 +34,18 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
   const srcJson = {};
   const wsJson = {};
   srcFiles.forEach(function(filePath, index) {
-    if (!fs.existsSync(filePath)) {
+    // Is this check necessary?
+    if (!fse.existsSync(filePath)) {
       return;
     }
 
-    const isDirectory = isDirectoryUtil(filePath);
-
-    if (excludeUtil.test(`${filePath.replace(srcDir, "")}${isDirectory ? "/" : ""}`, ignored)) {
+    if (ignore(ignored)(filePath)) {
       return;
     }
 
     srcJson[filePath.replace(srcDir, "")] = false;
-
   });
+
   targetFiles.forEach(function(filePath, index) {
     wsJson[filePath.replace(targetDir, "")] = false;
   });
@@ -87,7 +58,7 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
     const targetPath = path.join(targetDir, relativeFilePath);
 
     if (type === "hardlink") {
-      linkDirFiles(relativeFilePath, srcPath, targetPath);
+      linkDirFiles(srcPath, targetPath);
 
       onSync({
         type: "init:hardlink",
@@ -101,7 +72,6 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
         relativePath: relativeFilePath,
       });
     }
-
   }
 
   for(let relativeFilePath in wsJson) {
@@ -111,7 +81,14 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
   }
 }
 
-module.exports = function linkOrCopyFolders(srcDir, targetDir, { type, ignored, onSync }) {
+module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignored, onSync }) {
   fse.ensureDirSync(targetDir);
-  syncFiles(srcDir, targetDir, { type, ignored, onSync });
+
+  sourceDirs.forEach((sourceDir) => {
+    const folderName = path.parse(sourceDir).name;
+    const sourceTargetDir = path.join(targetDir, folderName);
+
+    fse.ensureDirSync(sourceTargetDir);
+    syncFiles(sourceDir, sourceTargetDir, { type, ignored, onSync });
+  })
 };
