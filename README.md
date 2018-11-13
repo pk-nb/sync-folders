@@ -133,9 +133,6 @@ Supported flags:
 
 --verbose,  Logs out information on initial sync and any updates in watch mode.
 -v          Default: false.
-
---quiet,    Suppresses any logging from warnings and errors.
--q          Default: false.
 ```
 
 ## Module API
@@ -160,7 +157,6 @@ syncFolders("/path/to/sourceDir1", "/path/to/target/dir", {
     (path) => path.indexOf("bar") === -1,
   ],
   verbose: true,
-  quiet: false,
   onSync: ({ type, sourceDir, targetDir, relativePath }) => {
     console.log(`Synced folder ${sourceDir}`);
   },
