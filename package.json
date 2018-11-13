@@ -1,6 +1,6 @@
 {
   "name": "sync-folders",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A utility designed to copy local directories to a destination.",
   "main": "index.js",
   "scripts": {
