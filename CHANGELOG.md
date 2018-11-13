@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2018-11-13
+### Changed
+- Fixed missing fs event for hardlink on updates by forcing utime on all hardlinks.
+
 ## [1.0.1] - 2018-11-13
 ### Changed
 - Added quiet option and improved logging.
