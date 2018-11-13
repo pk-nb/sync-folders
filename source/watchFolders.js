@@ -33,6 +33,7 @@ function removeFile(filePath, sourceDir, targetDir, ignore) {
 
 const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignore }) => (filePath) => {
   const sourceDir = findWhichSourceDir(sourceDirs, filePath);
+
   type === "hardlink" ?
     linkFile(filePath, sourceDir, targetDir, ignore) :
     copyFile(filePath, sourceDir, targetDir, ignore);

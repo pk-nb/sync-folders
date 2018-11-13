@@ -43,9 +43,6 @@ Supported flags:
 
 --verbose,  Logs out information on initial sync and any updates in watch mode.
 -v          Default: false.
-
---quiet,    Suppresses any logging from warnings and errors.
--q          Default: false.
 `
 );
 
@@ -67,9 +64,6 @@ function parseFlag(flag) {
     case "--verbose":
     case "-v":
       return { verbose: true };
-    case "--quiet":
-    case "-q":
-      return { quiet: true };
     default:
       console.log(`Unknown flag ${flag}`);
       process.exit(1);
@@ -128,30 +122,3 @@ console.log(args);
 
 
 syncFolders(sourcePaths, targetDir, args);
-
-
-
-
-
-
-
-
-
-
-
-// ./bin/syncFolders --help
-// ./bin/syncFolders --watch ./a ./b ./c ./output
-// ./bin/syncFolders --type copy --watch --ignored **/node_modules/**,**/node_modules ./a ./b ./c ./output
-
-
-
-// TODO take CLI args in this form.
-// const resolvedSourceDirs = sourceDirs.map((dir) => path.resolve(process.cwd(), sourceDirs));
-//
-// syncFolders([src1, src2], target, {
-//   watch: true,
-//   ignore: [
-//     "**/node_modules/**",
-//     "**/node_modules",
-//   ],
-// });
