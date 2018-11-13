@@ -7,7 +7,6 @@ function isDirectory(filePath) {
   }
 };
 
-
 function findWhichSourceDir(sourceDirs, filePath) {
   return sourceDirs.find((dir) => filePath.startsWith(dir));
 }
@@ -40,7 +39,6 @@ function linkDirFiles(srcPath, targetPath) {
 
 
 module.exports = {
-  isDirectory,
   findWhichSourceDir,
   utimeFile,
   linkDirFiles,

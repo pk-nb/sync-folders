@@ -3,15 +3,15 @@ const fse = require("fs-extra");
 const anymatch = require("anymatch");
 const readdirEnhanced = require("readdir-enhanced");
 
-const { linkDirFiles, isDirectory: isDirectoryUtil } = require("./helpers");
+const { linkDirFiles } = require("./helpers");
 
-const ignore = (ignored) => (path) => {
-  return anymatch(ignored, path);
+const ignored = (ignore) => (path) => {
+  return anymatch(ignore, path);
 }
 
-function readdirSync(dir, ignored) {
+function readdirSync(dir, ignore) {
   return readdirEnhanced.sync(dir, {
-    deep: ignored ? (stats) => !ignore(ignored)(stats.path) : true,
+    deep: ignore ? (stats) => !ignored(ignore)(stats.path) : true,
     basePath: dir
   });
 }
@@ -26,8 +26,8 @@ function removeFile(filePath) {
   fse.removeSync(filePath);
 }
 
-function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
-  const srcFiles = readdirSync(srcDir, ignored);
+function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
+  const srcFiles = readdirSync(srcDir, ignore);
   const targetFiles = readdirSync(targetDir);
 
   // array to json
@@ -39,7 +39,7 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
       return;
     }
 
-    if (ignore(ignored)(filePath)) {
+    if (ignored(ignore)(filePath)) {
       return;
     }
 
@@ -81,7 +81,7 @@ function syncFiles(srcDir, targetDir, { type, ignored, onSync }) {
   }
 }
 
-module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignored, onSync }) {
+module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignore, onSync }) {
   fse.ensureDirSync(targetDir);
 
   sourceDirs.forEach((sourceDir) => {
@@ -89,6 +89,6 @@ module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignor
     const sourceTargetDir = path.join(targetDir, folderName);
 
     fse.ensureDirSync(sourceTargetDir);
-    syncFiles(sourceDir, sourceTargetDir, { type, ignored, onSync });
+    syncFiles(sourceDir, sourceTargetDir, { type, ignore, onSync });
   })
 };

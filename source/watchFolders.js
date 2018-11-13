@@ -3,9 +3,9 @@ const path = require("path");
 const fse = require("fs-extra");
 const chokidar = require("chokidar");
 
-const { linkDirFiles, timeFile, isDirectory, findWhichSourceDir } = require("./helpers");
+const { linkDirFiles, timeFile, findWhichSourceDir } = require("./helpers");
 
-function linkFile(filePath, sourceDir, targetDir, ignored) {
+function linkFile(filePath, sourceDir, targetDir, ignore) {
   const relativeFilePath = filePath.substring(sourceDir.length);
   const folderName = path.parse(sourceDir).name;
   const targetPath = path.join(targetDir, folderName, relativeFilePath);
@@ -13,7 +13,7 @@ function linkFile(filePath, sourceDir, targetDir, ignored) {
   linkDirFiles(filePath, targetPath);
 }
 
-function copyFile(filePath, sourceDir, targetDir, ignored) {
+function copyFile(filePath, sourceDir, targetDir, ignore) {
   const relativeFilePath = filePath.substring(sourceDir.length);
   const folderName = path.parse(sourceDir).name;
   const targetPath = path.join(targetDir, folderName, relativeFilePath);
@@ -21,7 +21,7 @@ function copyFile(filePath, sourceDir, targetDir, ignored) {
   fse.copySync(filePath, targetPath);
 }
 
-function removeFile(filePath, sourceDir, targetDir, ignored) {
+function removeFile(filePath, sourceDir, targetDir, ignore) {
   const relativeFilePath = filePath.substring(sourceDir.length);
   const folderName = path.parse(sourceDir).name;
   const targetFile = path.join(targetDir, folderName, relativeFilePath);
@@ -31,11 +31,11 @@ function removeFile(filePath, sourceDir, targetDir, ignored) {
   }
 }
 
-const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignored }) => (filePath) => {
+const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignore }) => (filePath) => {
   const sourceDir = findWhichSourceDir(sourceDirs, filePath);
   type === "hardlink" ?
-    linkFile(filePath, sourceDir, targetDir, ignored) :
-    copyFile(filePath, sourceDir, targetDir, ignored);
+    linkFile(filePath, sourceDir, targetDir, ignore) :
+    copyFile(filePath, sourceDir, targetDir, ignore);
 
   onUpdate({
     eventType,
@@ -43,10 +43,10 @@ const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignor
   });
 };
 
-const onUnlink = ({ sourceDirs, targetDir, ignored, onUpdate, eventType }) => (filePath) => {
+const onUnlink = ({ sourceDirs, targetDir, ignore, onUpdate, eventType }) => (filePath) => {
   const sourceDir = findWhichSourceDir(sourceDirs, filePath);
 
-  removeFile(filePath, sourceDir, targetDir, ignored);
+  removeFile(filePath, sourceDir, targetDir, ignore);
   onUpdate({
     eventType,
     path: filePath,
@@ -57,7 +57,7 @@ module.exports = function watch(sourceDirs, targetDir, options) {
   const watcher = chokidar.watch(sourceDirs, {
     alwaysStat: true,
     disableGlobbing: true,
-    ignored: options.ignored,
+    ignored: options.ignore,
   });
 
   const args = Object.assign({}, options, { sourceDirs, targetDir });

@@ -3,8 +3,10 @@ const watchFolders = require('./source/watchFolders');
 
 const defaultOptions = {
   type: "hardlink",
-  ignored: undefined,
+  ignore: undefined,
   watch: false,
+  verbose: false,
+  quiet: false,
   onSync: () => {},
   onUpdate: () => {},
 };
@@ -12,18 +14,18 @@ const defaultOptions = {
 module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
   const {
     type,
-    ignored,
+    ignore,
     watch,
     onSync,
     onUpdate,
   } = Object.assign({}, defaultOptions, options);
 
-  console.log(sourceDirs, targetDir);
+  const arrSourceDirs = Array.isArray(sourceDirs) ? sourceDirs : [sourceDirs];
 
-  linkOrCopyFolders(sourceDirs, targetDir, { type, ignored, onSync });
+  linkOrCopyFolders(arrSourceDirs, targetDir, { type, ignore, onSync });
 
   if (watch) {
-    const watcher = watchFolders(sourceDirs, targetDir, { type, ignored, onSync, onUpdate });
+    const watcher = watchFolders(arrSourceDirs, targetDir, { type, ignore, onSync, onUpdate });
     return watcher;
   }
 };
