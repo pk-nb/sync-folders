@@ -28,7 +28,7 @@ Supported flags:
 --watch,    Watch the source folders for changes to copy to the target.
 -w          Default: false.
 
---ignore,   Anymatch compatable ignore string. CLI only takes string forms
+--ignore,   Anymatch compatible ignore string. CLI only takes string forms
 -i          (separated by commas).
             Default: none.
             Example (to ignore all node_modules):

@@ -61,14 +61,18 @@ function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
       linkDirFiles(srcPath, targetPath);
 
       onSync({
-        type: "init:hardlink",
+        type,
+        sourcePath: srcPath,
+        targetPath,
         relativePath: relativeFilePath,
       });
     } else if (type === "copy") {
       copyDirFiles(srcPath, targetPath);
 
       onSync({
-        type: "init:copy",
+        type,
+        sourcePath: srcPath,
+        targetPath,
         relativePath: relativeFilePath,
       });
     }

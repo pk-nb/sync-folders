@@ -38,7 +38,9 @@ const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignor
     copyFile(filePath, sourceDir, targetDir, ignore);
 
   onUpdate({
-    eventType,
+    sourceDir,
+    targetDir,
+    type: eventType,
     path: filePath,
   });
 };
@@ -48,7 +50,9 @@ const onUnlink = ({ sourceDirs, targetDir, ignore, onUpdate, eventType }) => (fi
 
   removeFile(filePath, sourceDir, targetDir, ignore);
   onUpdate({
-    eventType,
+    sourceDir,
+    targetDir,
+    type: eventType,
     path: filePath,
   });
 };
