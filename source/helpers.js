@@ -26,6 +26,9 @@ function linkDirFiles(srcPath, targetPath) {
         fse.removeSync(targetPath);
         fse.ensureLinkSync(srcPath, targetPath);
         utimeFile(targetPath);
+      } else {
+        // Ensure we update the link to trigger other file watching
+        utimeFile(targetPath);
       }
     } else {
       fse.ensureLinkSync(srcPath, targetPath);
