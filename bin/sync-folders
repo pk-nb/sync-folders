@@ -41,14 +41,16 @@ Supported flags:
             preferred for performance and saving disk space.
             Default: "hardlink".
 
---verbose,  Logs out information on initial sync and any updates in watch mode.
+--verbose,  Logs out detailed information on initial sync and any updates in watch mode.
 -v          Default: false.
+
+--quiet,    Suppresses all logging, including basic initial copy output.
+-q          Default: false.
 `
 );
 
 process.exit(0);
 }
-
 
 function parseFlag(flag) {
   switch (flag){
@@ -64,6 +66,9 @@ function parseFlag(flag) {
     case "--verbose":
     case "-v":
       return { verbose: true };
+    case "--quiet":
+    case "-q":
+      return { quiet: true };
     default:
       console.log(`Unknown flag ${flag}`);
       process.exit(1);
@@ -100,7 +105,7 @@ const args = process.argv.slice(2).reduce((accum, arg) => {
   return Object.assign({}, accum, {
     dirs: [arg, ...accum.dirs]
   });
-}, { dirs: [] });
+}, { dirs: [], quiet: false });
 
 const [relativeTargetDir, ...relativeSourcePaths] = args.dirs;
 
@@ -110,15 +115,12 @@ const sourcePaths = relativeSourcePaths.map(relativePath => {
 
   if (!fs.existsSync(absolutePath)) {
     console.log(
-      `Could not resolve ${relativePath}, expanded to ${absolutePath}`
+      `Could not resolve the path "${relativePath}", (expanded to ${absolutePath})`
     );
     process.exit(1);
   }
 
   return absolutePath;
 });
-
-console.log(args);
-
 
 syncFolders(sourcePaths, targetDir, args);

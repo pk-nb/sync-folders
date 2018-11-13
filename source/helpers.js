@@ -37,8 +37,8 @@ function linkDirFiles(srcPath, targetPath) {
   }
 }
 
-
 module.exports = {
+  isDirectory,
   findWhichSourceDir,
   utimeFile,
   linkDirFiles,

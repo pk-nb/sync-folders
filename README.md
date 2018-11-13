@@ -1,6 +1,6 @@
 # `sync-folders`
 
-This module provides both a CLI and API to one-way sync multiple directories to a single destination folder. Files missing in the designation directories will be removed on initial sync, so **be careful** where you target the output. Folders are not merged and must be unique. By default, this package uses a "hardlink" strategy where directories are replicated and files are directly linked (pointing to the same inodes).
+This module provides both a CLI and API to one-way sync multiple directories to a single destination folder. Folders are copied by the source name (not merged) and must be unique. Files missing in the destination directories (anything within matching source folder names) will be removed on initial sync, so **be careful** where you target the output. By default, this package uses a "hardlink" strategy where directories are replicated and files are directly linked (pointing to the same inodes).
 
 ## Basic usage:
 
@@ -133,6 +133,10 @@ Supported flags:
 
 --verbose,  Logs out information on initial sync and any updates in watch mode.
 -v          Default: false.
+
+
+--quiet,    Suppresses all logging, including basic initial copy output.
+-q          Default: false.
 ```
 
 ## Module API
@@ -157,6 +161,7 @@ syncFolders("/path/to/sourceDir1", "/path/to/target/dir", {
     (path) => path.indexOf("bar") === -1,
   ],
   verbose: true,
+  quiet: false,
   onSync: ({ type, sourceDir, targetDir, relativePath }) => {
     console.log(`Synced folder ${sourceDir}`);
   },
