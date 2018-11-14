@@ -47,7 +47,9 @@ function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
   });
 
   targetFiles.forEach(function(filePath, index) {
-    wsJson[filePath.replace(targetDir, "")] = false;
+    if (!ignored(ignore)(filePath)) {
+      wsJson[filePath.replace(targetDir, "")] = false;
+    }
   });
 
   // link or copy files
