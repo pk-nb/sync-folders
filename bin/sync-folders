@@ -3,6 +3,7 @@
 const fs = require("fs");
 const path = require("path");
 const syncFolders = require("../index");
+const anymatch = require("anymatch");
 
 const src1 = path.resolve(__dirname, "..", "test", "src1");
 const src2 = path.resolve(__dirname, "..", "test", "src2");
@@ -28,11 +29,14 @@ Supported flags:
 --watch,    Watch the source folders for changes to copy to the target.
 -w          Default: false.
 
---ignore,   Anymatch compatible ignore string. CLI only takes string forms
--i          (separated by commas).
+--ignore,   Anymatch compatible ignore string. CLI only takes string forms and regex forms.
+-i          (separated by commas). Regex forms take the shape of JS literals, i.e.
+            \`/node_modules/\` and \`/node_modules/i\`. All flags (igumy) are allowed. Invalid
+            regex will fall back to being in string form. Note that anymatch globs will not match
+            dotfiles, so a regex is likely what you want for ignoring folders.
             Default: none.
-            Example (to ignore all node_modules):
-                --ignore "**/node_modules,**/node_modules/**"
+            Example (to ignore all node_modules and git):
+                --ignore "/node_modules/i,/\.git/i"
 
 --type,     Strategy for syncing the folders. By default, this tool will prefer
 -t          using the "hardlink" strategy, where each file is hardlinked
@@ -76,7 +80,17 @@ function parseFlag(flag) {
 }
 
 function parseIgnored(source) {
-  return source.split(",");
+  return source.split(",").map((ignoreString) => {
+    // Match a regex (i.e. `/anything/ig` ) to turn into a regex
+    const parsedRegex = (/^\/(.*)\/([gimuy]*)$/g).exec(ignoreString);
+
+    if (parsedRegex) {
+      // Capture group one is the regex body, and capture group two contains flags, if any.
+      return new RegExp(parsedRegex[1], ...parsedRegex[2].split(""));
+    }
+
+    return ignoreString;
+  });
 }
 
 const args = process.argv.slice(2).reduce((accum, arg) => {
