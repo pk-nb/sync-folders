@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.4] - 2018-11-13
+### Changed
+- Updated to support regex forms from the CLI, to encourage ignoring through that method.
+    - Anymatch globs doesn't match dotfiles by default and we can't control chokidar's ignore logic to turn on that flag. We encourage regex forms to circumvent this.
+
 ## [1.0.3] - 2018-11-13
 ### Changed
 - Updated to avoid removing files in target directory when they match the ignore option.
