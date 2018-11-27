@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+## [2.0.0] - 2018-11-27
+### BREAKING
+- Added `bail` option to catch and log syncing errors rather than crashing the process. Breaking since we default it on which differed from prior versions.
+
 ## [1.0.4] - 2018-11-13
 ### Changed
 - Updated to support regex forms from the CLI, to encourage ignoring through that method.
