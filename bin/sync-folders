@@ -45,6 +45,10 @@ Supported flags:
             preferred for performance and saving disk space.
             Default: "hardlink".
 
+--bail,     Exits process whenever there is an error syncing any files or folders.
+-b          If off, errors will be caught and logged unless \`--quiet\`.
+            Default: false.
+
 --verbose,  Logs out detailed information on initial sync and any updates in watch mode.
 -v          Default: false.
 
@@ -70,6 +74,9 @@ function parseFlag(flag) {
     case "--verbose":
     case "-v":
       return { verbose: true };
+    case "--bail":
+    case "-b":
+      return { bail: true };
     case "--quiet":
     case "-q":
       return { quiet: true };

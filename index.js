@@ -8,6 +8,7 @@ const defaultOptions = {
   type: "hardlink",
   ignore: undefined,
   watch: false,
+  bail: false,
   quiet: true, // defaults to false from CLI
   verbose: false,
   onSync: () => {},
@@ -72,6 +73,7 @@ function logOutput(sourceDirs, targetDir, watch) {
 
 module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
   const {
+    bail,
     type,
     ignore,
     quiet,
@@ -91,6 +93,7 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
   linkOrCopyFolders(arrSourceDirs, targetDir, {
     type,
     ignore,
+    bail,
     onSync: verbose && !quiet ? wrappedOnSync(onSync) : onSync,
   });
 
@@ -98,6 +101,7 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
     const watcher = watchFolders(arrSourceDirs, targetDir, {
       type,
       ignore,
+      bail,
       onUpdate: verbose && !quiet ? wrappedOnUpdate(onUpdate) : onUpdate,
     });
 

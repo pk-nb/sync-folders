@@ -118,11 +118,14 @@ Supported flags:
 --watch,    Watch the source folders for changes to copy to the target.
 -w          Default: false.
 
---ignore,   Anymatch compatible ignore string. CLI only takes string forms
--i          (separated by commas).
+--ignore,   Anymatch compatible ignore string. CLI only takes string forms and regex forms.
+-i          (separated by commas). Regex forms take the shape of JS literals, i.e.
+            \`/node_modules/\` and \`/node_modules/i\`. All flags (igumy) are allowed. Invalid
+            regex will fall back to being in string form. Note that anymatch globs will not match
+            dotfiles, so a regex is likely what you want for ignoring folders.
             Default: none.
-            Example (to ignore all node_modules):
-                --ignore "**/node_modules,**/node_modules/**"
+            Example (to ignore all node_modules and git):
+                --ignore "/node_modules/i,/\.git/i"
 
 --type,     Strategy for syncing the folders. By default, this tool will prefer
 -t          using the "hardlink" strategy, where each file is hardlinked
@@ -131,9 +134,12 @@ Supported flags:
             preferred for performance and saving disk space.
             Default: "hardlink".
 
---verbose,  Logs out information on initial sync and any updates in watch mode.
--v          Default: false.
+--bail,     Exits process whenever there is an error syncing any files or folders.
+-b          If off, errors will be caught and logged unless \`--quiet\`.
+            Default: false.
 
+--verbose,  Logs out detailed information on initial sync and any updates in watch mode.
+-v          Default: false.
 
 --quiet,    Suppresses all logging, including basic initial copy output.
 -q          Default: false.
