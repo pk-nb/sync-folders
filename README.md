@@ -27,7 +27,7 @@ output/
 ## Watch and ignore example
 
 ```sh
-sync-folders --watch --ignore "**/node_modules/**,**/node_modules" ./src1 ./src2 ./some/output
+sync-folders --watch --ignore "/node_modules/i" ./src1 ./src2 ./some/output
 ```
 
 Before:
@@ -168,6 +168,7 @@ syncFolders("/path/to/sourceDir1", "/path/to/target/dir", {
   ],
   verbose: true,
   quiet: false,
+  bail: true, // throws error on any syncing failure.
   onSync: ({ type, sourceDir, targetDir, relativePath }) => {
     console.log(`Synced folder ${sourceDir}`);
   },

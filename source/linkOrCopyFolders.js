@@ -26,7 +26,7 @@ function removeFile(filePath) {
   fse.removeSync(filePath);
 }
 
-function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
+function syncFiles(srcDir, targetDir, { type, ignore, onSync, bail, quiet }) {
   const srcFiles = readdirSync(srcDir, ignore);
   const targetFiles = readdirSync(targetDir);
 
@@ -59,24 +59,34 @@ function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
     const srcPath = path.join(srcDir, relativeFilePath);
     const targetPath = path.join(targetDir, relativeFilePath);
 
-    if (type === "hardlink") {
-      linkDirFiles(srcPath, targetPath);
+    try {
+      if (type === "hardlink") {
+        linkDirFiles(srcPath, targetPath);
 
-      onSync({
-        type,
-        sourcePath: srcPath,
-        targetPath,
-        relativePath: relativeFilePath,
-      });
-    } else if (type === "copy") {
-      copyDirFiles(srcPath, targetPath);
+        onSync({
+          type,
+          sourcePath: srcPath,
+          targetPath,
+          relativePath: relativeFilePath,
+        });
+      } else if (type === "copy") {
+        copyDirFiles(srcPath, targetPath);
 
-      onSync({
-        type,
-        sourcePath: srcPath,
-        targetPath,
-        relativePath: relativeFilePath,
-      });
+        onSync({
+          type,
+          sourcePath: srcPath,
+          targetPath,
+          relativePath: relativeFilePath,
+        });
+      }
+    } catch (err) {
+      if (bail) {
+        throw err;
+      }
+
+      if (!quiet) {
+        console.log(`Failed to ${type} file from ${srcPath} to ${targetPath}.`);
+      }
     }
   }
 
@@ -87,7 +97,7 @@ function syncFiles(srcDir, targetDir, { type, ignore, onSync }) {
   }
 }
 
-module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignore, onSync }) {
+module.exports = function linkOrCopyFolders(sourceDirs, targetDir, options) {
   fse.ensureDirSync(targetDir);
 
   sourceDirs.forEach((sourceDir) => {
@@ -95,6 +105,6 @@ module.exports = function linkOrCopyFolders(sourceDirs, targetDir, { type, ignor
     const sourceTargetDir = path.join(targetDir, folderName);
 
     fse.ensureDirSync(sourceTargetDir);
-    syncFiles(sourceDir, sourceTargetDir, { type, ignore, onSync });
+    syncFiles(sourceDir, sourceTargetDir, options);
   })
 };

@@ -31,31 +31,68 @@ function removeFile(filePath, sourceDir, targetDir, ignore) {
   }
 }
 
-const onAddOrChange = ({ sourceDirs, targetDir, onUpdate, type, eventType, ignore }) => (filePath) => {
+const onAddOrChange = ({
+  sourceDirs,
+  targetDir,
+  onUpdate,
+  type,
+  eventType,
+  ignore,
+  quiet,
+  bail
+}) => (filePath) => {
   const sourceDir = findWhichSourceDir(sourceDirs, filePath);
 
-  type === "hardlink" ?
-    linkFile(filePath, sourceDir, targetDir, ignore) :
-    copyFile(filePath, sourceDir, targetDir, ignore);
+  try {
+    type === "hardlink" ?
+      linkFile(filePath, sourceDir, targetDir, ignore) :
+      copyFile(filePath, sourceDir, targetDir, ignore);
 
-  onUpdate({
-    sourceDir,
-    targetDir,
-    type: eventType,
-    path: filePath,
-  });
+    onUpdate({
+      sourceDir,
+      targetDir,
+      type: eventType,
+      path: filePath,
+    });
+  } catch (err) {
+    if (bail) {
+      throw err;
+    }
+
+    if (!quiet) {
+      console.log(`Failed to ${type} file ${filePath} to ${targetDir}.`);
+    }
+  }
 };
 
-const onUnlink = ({ sourceDirs, targetDir, ignore, onUpdate, eventType }) => (filePath) => {
+const onUnlink = ({
+  sourceDirs,
+  targetDir,
+  ignore,
+  onUpdate,
+  eventType,
+  quiet,
+  bail
+}) => (filePath) => {
   const sourceDir = findWhichSourceDir(sourceDirs, filePath);
 
-  removeFile(filePath, sourceDir, targetDir, ignore);
-  onUpdate({
-    sourceDir,
-    targetDir,
-    type: eventType,
-    path: filePath,
-  });
+  try {
+    removeFile(filePath, sourceDir, targetDir, ignore);
+    onUpdate({
+      sourceDir,
+      targetDir,
+      type: eventType,
+      path: filePath,
+    });
+  } catch (err) {
+    if (bail) {
+      throw err;
+    }
+
+    if (!quiet) {
+      console.log(`Failed to remove file ${filePath} in ${targetDir}.`);
+    }
+  }
 };
 
 module.exports = function watch(sourceDirs, targetDir, options) {

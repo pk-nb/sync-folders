@@ -92,6 +92,7 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
 
   linkOrCopyFolders(arrSourceDirs, targetDir, {
     type,
+    quiet,
     ignore,
     bail,
     onSync: verbose && !quiet ? wrappedOnSync(onSync) : onSync,
@@ -102,6 +103,7 @@ module.exports = function syncFolders(sourceDirs, targetDir, options = {}) {
       type,
       ignore,
       bail,
+      quiet,
       onUpdate: verbose && !quiet ? wrappedOnUpdate(onUpdate) : onUpdate,
     });
 
